@@ -217,6 +217,19 @@ static const NSString *oauthVersion = @"1.0";
                                verifier:(NSString *)verifier
                             usingMethod:(ASIOAuthSignatureMethod)signatureMethod
 {
+    [self signRequestWithClientIdentifier:clientIdentifier secret:clientSecret tokenIdentifier:tokenIdentifier 
+                                   secret:tokenSecret verifier:verifier
+                                 callback:nil usingMethod:signatureMethod];
+}
+
+- (void)signRequestWithClientIdentifier:(NSString *)clientIdentifier
+                                 secret:(NSString *)clientSecret
+                        tokenIdentifier:(NSString *)tokenIdentifier
+                                 secret:(NSString *)tokenSecret
+                               verifier:(NSString *)verifier
+                               callback:(NSString *)callback
+                            usingMethod:(ASIOAuthSignatureMethod)signatureMethod
+{
     [self buildPostBody];
     
     NSMutableArray *oauthParameters = [NSMutableArray array];
@@ -230,6 +243,8 @@ static const NSString *oauthVersion = @"1.0";
         [oauthParameters addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"oauth_token", @"key", tokenIdentifier, @"value", nil]];
     if (verifier != nil)
         [oauthParameters addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"oauth_verifier", @"key", verifier, @"value", nil]];
+    if (callback != nil)
+        [oauthParameters addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"oauth_callback", @"key", callback, @"value", nil]];    
     [oauthParameters addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"oauth_signature_method", @"key", oauthSignatureMethodName[signatureMethod], @"value", nil]];
     [oauthParameters addObjectsFromArray:[self oauthGenerateTimestampAndNonce]];    
     [oauthParameters addObjectsFromArray:[self oauthAdditionalParametersForMethod:signatureMethod]];
